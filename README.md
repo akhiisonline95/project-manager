@@ -29,12 +29,12 @@ A lightweight, PHP-based task management application designed for simplicity and
 
 2.  **Set up the database**
     * Create a database (example: `project_manager_db`).
-    * Import provided SQL schema located in `/database/schema.sql` or run SQL scripts for `tasks`, `task_files`, `users`, `projects` tables.
+    * Import provided SQL schema located in `database.sql` or run SQL scripts for `tasks`, `task_files`, `users`, `projects` tables.
 
 3.  **Configure database connection**
     * Edit your database config file, for example:
         ```text
-        /config/database.php
+        /config/db.php
         ```
     * Set your DB host, name, username, and password appropriately.
 
@@ -59,7 +59,7 @@ A lightweight, PHP-based task management application designed for simplicity and
 
 ---
 
-## Project Structure Explanation
+## Project Structure
 
 ```text.
 ├── .gitignore               # Specifies files and directories to be ignored by Git
