@@ -1,0 +1,63 @@
+body {
+    background: linear-gradient(120deg, #a8edea, #fed6e3 80%);
+    min-height: 100vh;
+}
+
+.login-container {
+    max-width: 400px;
+    margin: 6vh auto;
+    background: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.17);
+    padding: 2.5rem 2rem 2rem 2rem;
+}
+
+.login-title {
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 2rem;
+    letter-spacing: 0.05em;
+    text-align: center;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: #6558f5;
+}
+
+.form-control:focus {
+    box-shadow: 0 0 0 0.2rem #6558f540;
+    border-color: #6558f5;
+}
+
+.btn-primary {
+    background: linear-gradient(90deg, #6558f5 30%, #33d9b2 100%);
+    border: none;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(90deg, #33d9b2 30%, #6558f5 100%);
+}
+
+.login-footer {
+    text-align: center;
+    font-size: 0.95em;
+    color: #8a8a8a;
+    margin-top: 2rem;
+}
+
+.avatar {
+    margin: 0 auto 1rem auto;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: linear-gradient(120deg, #6558f5 40%, #33d9b2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatar svg {
+    color: #fff;
+    width: 35px;
+    height: 35px;
+}
