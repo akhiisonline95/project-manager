@@ -23,7 +23,7 @@ A lightweight, PHP-based task management application designed for simplicity and
 
 1.  **Clone the repository**
     ```bash
-    git clone [https://your-repo-url.git](https://your-repo-url.git)
+    git clone https://github.com/akhiisonline95/project-manager.git
     cd project-manager
     ```
 
