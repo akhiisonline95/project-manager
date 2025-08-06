@@ -126,11 +126,50 @@ class Task extends Model
 
     }
 
-    public function getTasksByUser($userId)
+    public function getTasksByAssignedUser($userId)
     {
-        $stmt = $this->db->prepare("SELECT * FROM tasks WHERE assigned_to = ? ORDER BY due_date ASC");
-        $stmt->execute([$userId]);
+        $sql = "
+            SELECT t.*, u_assigned.username AS assigned_username, u_created.username AS created_by_username
+            FROM tasks t
+            LEFT JOIN users u_assigned ON t.assigned_to = u_assigned.id
+            LEFT JOIN users u_created ON t.created_by = u_created.id
+            WHERE t.assigned_to = :user_id
+            ORDER BY t.due_date ASC
+        ";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':user_id' => $userId]);
+
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function updateTaskByID($id, array $data): bool
+    {
+        $fields = [];
+        $params = [':id' => $id];
+
+        if (isset($data['priority'])) {
+            $fields[] = "priority = :priority";
+            $params[':priority'] = $data['priority'];
+        }
+
+        if (isset($data['status'])) {
+            $fields[] = "status = :status";
+            $params[':status'] = $data['status'];
+        }
+
+        if (isset($data['assigned_to'])) {
+            $fields[] = "assigned_to = :assigned_to";
+            $params[':assigned_to'] = $data['assigned_to'];
+        }
+
+        if (empty($fields)) {
+            return false; // Nothing to update
+        }
+
+        $sql = "UPDATE tasks SET " . implode(", ", $fields) . " WHERE id = :id LIMIT 1";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute($params);
     }
 
 }

@@ -36,20 +36,22 @@ CREATE TABLE project_members (
 );
 
 DROP TABLE IF EXISTS `tasks`;
-CREATE TABLE `tasks`
-(
-    `id`          int          NOT NULL AUTO_INCREMENT,
-    `project_id`  int          NOT NULL,
-    `assigned_to` int          NOT NULL,
-    `title`       varchar(100) NOT NULL,
-    `description` text,
-    `due_date`    date DEFAULT NULL,
-    `priority`    enum('low','medium','high') DEFAULT 'medium',
-    `status`      enum('todo','in_progress','done') DEFAULT 'todo',
-    `created_at`  timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (`id`),
-    KEY           `project_id` (`project_id`),
-    KEY           `assigned_to` (`assigned_to`),
-    CONSTRAINT `tasks_ibfk_1` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`),
-    CONSTRAINT `tasks_ibfk_2` FOREIGN KEY (`assigned_to`) REFERENCES `users` (`id`)
+CREATE TABLE `tasks` (
+                         `id` int NOT NULL AUTO_INCREMENT,
+                         `project_id` int NOT NULL,
+                         `assigned_to` int NOT NULL,
+                         `title` varchar(100) NOT NULL,
+                         `description` text,
+                         `due_date` date DEFAULT NULL,
+                         `priority` enum('low','medium','high') DEFAULT 'medium',
+                         `status` enum('todo','in_progress','done') DEFAULT 'todo',
+                         `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+                         `created_by` int DEFAULT NULL,
+                         PRIMARY KEY (`id`),
+                         KEY `project_id` (`project_id`),
+                         KEY `assigned_to` (`assigned_to`),
+                         KEY `created_by` (`created_by`),
+                         CONSTRAINT `tasks_ibfk_1` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`),
+                         CONSTRAINT `tasks_ibfk_2` FOREIGN KEY (`assigned_to`) REFERENCES `users` (`id`),
+                         CONSTRAINT `tasks_ibfk_3` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

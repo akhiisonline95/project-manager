@@ -30,10 +30,12 @@ class DashboardController extends Controller
             $data['userWorkloads'] = $taskModel->getUserWorkloads();  // e.g., task count per user
         } else {
             // Team member: Show assigned tasks only
-            $data['assignedTasks'] = $taskModel->getTasksByUser($user['id']);
+            $data['assignedTasks'] = $taskModel->getTasksByAssignedUser($user['id']);
         }
 
         $data['user'] = $user;
         $this->view('dashboard/index',$data);
     }
+
+
 }

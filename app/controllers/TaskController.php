@@ -78,8 +78,8 @@ class TaskController extends Controller
         }
 
         $this->data['projects'] = $this->projectModel->getAll();
-        $this->data['taskData'] = $taskData= $id > 0 ? $this->taskModel->findById($id) : null;
-        $this->data['users'] = $this->data['taskData'] ?$this->projectModel->projectMembersById($taskData["project_id"]): $this->userModel->getMembers();
+        $this->data['taskData'] = $taskData = $id > 0 ? $this->taskModel->findById($id) : null;
+        $this->data['users'] = $this->data['taskData'] ? $this->projectModel->projectMembersById($taskData["project_id"]) : $this->userModel->getMembers();
         $this->data['error'] = $error;
         $this->view('tasks/form');
     }
@@ -110,5 +110,61 @@ class TaskController extends Controller
         }
         $this->redirect("task");
     }
+
+    public function taskData()
+    {
+        header('Content-Type: application/json');
+
+        $id = $_GET['id'] ?? null;
+        if (!$id) {
+            echo json_encode(['error' => 'Task ID is required']);
+            http_response_code(400);
+            exit;
+        }
+        $task = $this->taskModel->findById($id);
+        if ($task) {
+            echo json_encode($task);
+        } else {
+            echo json_encode(['error' => 'Task not found']);
+            http_response_code(404);
+        }
+        exit;
+    }
+
+    public function taskUpdate()
+    {
+        session_start();
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $id = $_POST['id'] ?? null;
+            if (!$id) {
+                $_SESSION['error'] = "Invalid task ID.";
+                $this->redirect("dashboard");
+            }
+            $data = [
+                'priority' => $_POST['priority'] ?? '',
+                'status' => $_POST['status'] ?? '',
+                'assigned_to' => $_POST['assigned_to'] ?? null,
+            ];
+
+            // Basic validation
+            if (empty($data['priority']) || empty($data['status']) || empty($data['assigned_to'])) {
+                $_SESSION['error'] = "Please fill all required fields.";
+                $this->redirect("dashboard");
+            }
+
+            // Update task data using model
+            $updated = $this->taskModel->updateTaskByID($id, $data);
+
+            if ($updated) {
+                $_SESSION['success'] = "Task updated successfully.";
+            } else {
+                $_SESSION['error'] = "Failed to update task.";
+            }
+
+            $this->redirect("dashboard");
+        }
+    }
+
 
 }
