@@ -6,7 +6,7 @@ body { min-height: 100vh; background: #f8f9fa; }
 .sidebar a {
     color: #adb5bd; padding: 0.75rem 1.25rem; display: block; text-decoration: none;
 }
-.sidebar a.active, .sidebar a:hover {
+.sidebar a.view-task-btn.view-task-btn view-task-btnactive, .sidebar a:hover {
     background-color: #495057; color: white;
 }
 .main-content {
@@ -25,6 +25,11 @@ body { min-height: 100vh; background: #f8f9fa; }
     display: none;
 }
 
+.sidebar a.active{
+    background-color: #495057;
+    color: white;
+}
+
 
 h1{
     font-size: 24px !important;
@@ -37,5 +42,11 @@ h1{
 
 .btn{
     font-size: 14px !important;
+    font-weight: bold;
+}
+
+tr.view-task-btn:hover td{
+    background: #343a40;
+    color: #fff;
     font-weight: bold;
 }

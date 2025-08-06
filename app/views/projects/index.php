@@ -2,7 +2,8 @@
 $pageTitle = 'Projects';
 $user = $user ?? ['username' => 'Guest', 'role' => 'member'];
 $this->view("layouts/header");
-$totalPages = $totalPages ?? 1;
+$filters = $filters ?? [];
+$offset = array_key_exists('offset', $filters) ? (int)$filters['offset'] : 0;
 ?>
 
 
@@ -18,7 +19,7 @@ $totalPages = $totalPages ?? 1;
         <table class="table table-hover table-bordered align-middle">
             <thead class="table-light">
             <tr>
-                <th>ID</th>
+                <th>#</th>
                 <th>Title</th>
                 <th>Description</th>
                 <th>Created By</th>
@@ -27,13 +28,13 @@ $totalPages = $totalPages ?? 1;
             </tr>
             </thead>
             <tbody>
-            <?php foreach ($projects as $project): ?>
+            <?php foreach ($projects as $key=>$project): ?>
                 <tr>
-                    <td><?= htmlspecialchars($project['id']) ?></td>
+                    <td><?=$offset+$key+1 ?></td>
                     <td><?= htmlspecialchars($project['title']) ?></td>
                     <td><?= nl2br(htmlspecialchars($project['description'])) ?></td>
-                    <td><?= htmlspecialchars($project['created_by']) ?></td>
-                    <td><?= htmlspecialchars($project['created_at']) ?></td>
+                    <td><?= htmlspecialchars($project['username']) ?></td>
+                    <td><?= date("d-m-Y h:i a",strtotime($project['created_at'])) ?></td>
                     <td class="text-center">
                         <a  href="index.php?controller=project&action=edit&id=<?= $project['id'] ?>"
                            class="btn btn-sm btn-warning me-1" title="Edit">
@@ -47,7 +48,7 @@ $totalPages = $totalPages ?? 1;
             <?php endforeach; ?>
             </tbody>
         </table>
-        <?php $this->view("layouts/pagination", ["totalPages" => $totalPages]); ?>
+        <?php $this->view("layouts/pagination"); ?>
 
     <?php endif; ?>
 </div>

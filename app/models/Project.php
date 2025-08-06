@@ -14,7 +14,7 @@ class Project extends Model
     // Fetches all projects
     public function getAll()
     {
-        $stmt = $this->db->query("SELECT * FROM projects ORDER BY created_at DESC");
+        $stmt = $this->db->query("SELECT projects.*,users.username FROM projects JOIN users ON users.id = projects.created_by ORDER BY created_at DESC");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 

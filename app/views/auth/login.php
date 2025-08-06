@@ -35,7 +35,7 @@
                     class="form-control"
                     required
                     autofocus
-                    value="<?= isset($_POST['username']) ? htmlspecialchars($_POST['username']) : 'member1' ?>"
+                    value="<?= isset($_POST['username']) ? htmlspecialchars($_POST['username']) : '' ?>"
                     placeholder="Enter username"
             />
             <div class="invalid-feedback">
@@ -51,7 +51,6 @@
                     name="password"
                     class="form-control"
                     required
-                    value="memberpass"
                     placeholder="Enter password"
             />
             <div class="invalid-feedback">

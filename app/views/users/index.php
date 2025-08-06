@@ -2,7 +2,8 @@
 $pageTitle = 'Projects';
 $user = $user ?? ['username' => 'Guest', 'role' => 'member'];
 $this->view("layouts/header");
-$totalPages = $totalPages ?? 1;
+$filters = $filters ?? [];
+$offset = array_key_exists('offset', $filters) ? (int)$filters['offset'] : 0;
 ?>
 
 
@@ -19,16 +20,16 @@ $totalPages = $totalPages ?? 1;
         <table class="table table-striped table-bordered">
             <thead class="table-primary">
             <tr>
-                <th>ID</th>
+                <th>#</th>
                 <th>Username</th>
                 <th>Role</th>
                 <th>Actions</th>
             </tr>
             </thead>
             <tbody>
-            <?php foreach ($users as $u): ?>
+            <?php foreach ($users as $k=>$u): ?>
                 <tr>
-                    <td><?= htmlspecialchars($u['id']) ?></td>
+                    <td><?=$offset+$k+1?></td>
                     <td><?= htmlspecialchars($u['username']) ?></td>
                     <td><?= htmlspecialchars($u['role']) ?></td>
                     <td>

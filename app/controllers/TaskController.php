@@ -72,10 +72,12 @@ class TaskController extends Controller
                 $error = "Due Date must be in YYYY-MM-DD format.";
             } else {
                 if ($id > 0) $this->taskModel->update($id, $data);
-                else $this->taskModel->create($data);
+                else {
+                    $data['created_by'] = $this->data['user']['id'];
+                    $this->taskModel->create($data);
+                }
                 $this->redirect("task");
-            }
-        }
+            }        }
 
         $this->data['projects'] = $this->projectModel->getAll();
         $this->data['taskData'] = $taskData = $id > 0 ? $this->taskModel->findById($id) : null;
@@ -121,8 +123,9 @@ class TaskController extends Controller
             http_response_code(400);
             exit;
         }
-        $task = $this->taskModel->findById($id);
+        $task = $this->taskModel->getTasksByID($id);
         if ($task) {
+            $task["members"] = $this->projectModel->projectMembersById($task["project_id"]);
             echo json_encode($task);
         } else {
             echo json_encode(['error' => 'Task not found']);
@@ -133,8 +136,6 @@ class TaskController extends Controller
 
     public function taskUpdate()
     {
-        session_start();
-
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $id = $_POST['id'] ?? null;
             if (!$id) {

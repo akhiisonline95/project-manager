@@ -13,28 +13,35 @@ class DashboardController extends Controller
             header('Location: index.php?controller=auth&action=login');
             exit;
         }
+        $this->data['user'] = Auth::user();
     }
 
     public function index()
     {
-        $user = Auth::user();
         $projectModel = new Project();
         $taskModel = new Task();
 
-        $data = [];
-
-        if ($user['role'] === 'admin') {
+        if ($this->data['user']['role'] === 'admin') {
             // Admin: Show overall stats
-            $data['projectCount'] = $projectModel->countAll();
-            $data['taskCount'] = $taskModel->countAll();
-            $data['userWorkloads'] = $taskModel->getUserWorkloads();  // e.g., task count per user
+            $this->data['projectCount'] = $projectModel->countAll();
+            $this->data['taskCount'] = $taskModel->countAll();
+            $this->data['userWorkloads'] = $taskModel->getUserWorkloads();  // e.g., task count per user
         } else {
             // Team member: Show assigned tasks only
-            $data['assignedTasks'] = $taskModel->getTasksByAssignedUser($user['id']);
+            $filters=  [
+                'controller' => 'dashboard',
+                'action' => 'index',
+                'limit' => $_GET['limit'] ?? 10,
+                'offset' => $_GET['offset'] ?? 0,
+            ];
+
+            $tasks = $taskModel->getTasksByAssignedUser($this->data['user']['id'],$filters);
+            $this->data['filters'] = $filters;
+            $this->data['assignedTasks'] = $tasks["records"];
+            $this->data['count'] = $tasks["count"];
         }
 
-        $data['user'] = $user;
-        $this->view('dashboard/index',$data);
+        $this->view('dashboard/index');
     }
 
 

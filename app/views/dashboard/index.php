@@ -1,7 +1,9 @@
 <?php
 $pageTitle = 'Dashboard';
 $this->view("layouts/header");
-$user = $user ?? []
+$user = $user ?? [];
+$filters = $filters ?? [];
+$offset = array_key_exists('offset', $filters) ? (int)$filters['offset'] : 0;
 ?>
 
 <div class="main-content">
@@ -52,29 +54,28 @@ $user = $user ?? []
             <table class="table table-striped table-hover align-middle">
                 <thead class="table-primary">
                 <tr>
-                    <th>Project ID</th>
+                    <th>#</th>
+                    <th>Project</th>
                     <th>Title</th>
                     <th>Due Date</th>
                     <th>Priority</th>
                     <th>Status</th>
-                    <th>Actions</th> <!-- Optional but kept for semantic -->
                 </tr>
                 </thead>
                 <tbody>
-                <?php foreach ($assignedTasks as $task): ?>
-                    <tr data-task='<?= json_encode($task) ?>' style="cursor:pointer;">
-                        <td><?= htmlspecialchars($task['project_id']) ?></td>
+                <?php foreach ($assignedTasks as $key=>$task): ?>
+                    <tr  data-task-id="<?=$task['id']?>" style="cursor:pointer;" class="view-task-btn">
+                        <td><?=$offset+$key+1?></td>
+                        <td><?= htmlspecialchars($task['project_title']) ?></td>
                         <td><?= htmlspecialchars($task['title']) ?></td>
-                        <td><?= htmlspecialchars($task['due_date']) ?></td>
+                        <td><?= date("d-m-Y",strtotime($task['due_date'])) ?></td>
                         <td><?= ucfirst(htmlspecialchars($task['priority'])) ?></td>
                         <td><?= ucfirst(str_replace('_', ' ', htmlspecialchars($task['status']))) ?></td>
-                        <td>
-                            <button class="btn btn-sm btn-info view-task-btn" data-task-id="<?=$task['id']?>" type="button">View / Edit</button>
-                        </td>
                     </tr>
                 <?php endforeach; ?>
                 </tbody>
             </table>
+            <?php $this->view("layouts/pagination"); ?>
         </div>
     <?php else: ?>
         <p>You have no assigned tasks.</p>
@@ -93,7 +94,7 @@ $user = $user ?? []
                         <input type="hidden" name="id" id="task_id"/>
 
                         <div class="mb-3 col-md-6 col-12">
-                            <label for="task_project_id" class="form-label">Project ID</label>
+                            <label for="task_project_id" class="form-label">Project</label>
                             <input type="text" id="task_project_id" class="form-control" disabled/>
                         </div>
 
@@ -109,7 +110,7 @@ $user = $user ?? []
 
                         <div class="mb-3 col-md-6 col-12">
                             <label for="task_due_date" class="form-label">Due Date</label>
-                            <input type="date" id="task_due_date" class="form-control" disabled/>
+                            <input type="text" id="task_due_date" class="form-control" disabled/>
                         </div>
 
                         <div class="mb-3 col-md-6 col-12">
@@ -136,11 +137,6 @@ $user = $user ?? []
                             <label for="task_assigned_to" class="form-label">Assigned To *</label>
                             <select name="assigned_to" id="task_assigned_to" class="form-select" required>
                                 <option value="">Select User</option>
-                                <!--                                --><?php //foreach ($users as $user): ?>
-                                <!--                                    <option value="-->
-                                <?php //= $user['id'] ?><!--">-->
-                                <?php //= htmlspecialchars($user['username']) ?><!--</option>-->
-                                <!--                                --><?php //endforeach; ?>
                             </select>
                         </div>
 
@@ -171,18 +167,24 @@ $user = $user ?? []
                     dataType: 'json',
                     success: function (task) {
                         if (task.error) {
-                            alert(task.error);
+                            console.log(task.error);
                             return;
                         }
 
                         $('#task_id').val(task.id);
-                        $('#task_project_id').val(task.project_id);
+                        $('#task_project_id').val(task.project_title);
                         $('#task_title').val(task.title);
                         $('#task_description').val(task.description);
-                        $('#task_due_date').val(task.due_date);
+                        $('#task_due_date').val(moment(task.due_date).format('DD-MM-YYYY'));
 
                         $('#task_priority').val(task.priority);
                         $('#task_status').val(task.status);
+
+                        let options = '<option value="">Select User</option>';
+                        $.each(task.members, function (i, user) {
+                            options += '<option value="' + user.id + '">' + user.username + '</option>';
+                        });
+                        $('#task_assigned_to').html(options);
                         $('#task_assigned_to').val(task.assigned_to);
 
                         $('#task_created_by').val(task.created_by_username || task.created_by);

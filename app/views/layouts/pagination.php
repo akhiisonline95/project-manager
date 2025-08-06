@@ -38,7 +38,7 @@ if ($pages > 0): ?>
             <?php for ($i = 1; $i <= $pages; $i++): ?>
                 <li class="page-item <?= ($pageIndex == $i) ? 'active' : '' ?>">
                     <a class="page-link"
-                       href="?<?= buildQueryString($baseParams, ['offset' => $i * $limit]) ?>"><?= $i ?></a>
+                       href="?<?= buildQueryString($baseParams, ['offset' => ($i-1) * $limit]) ?>"><?= $i ?></a>
                 </li>
             <?php endfor; ?>
 

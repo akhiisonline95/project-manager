@@ -2,6 +2,8 @@
 $pageTitle = 'Projects';
 $user = $user ?? ['username' => 'Guest', 'role' => 'member'];
 $this->view("layouts/header");
+$filters = $filters ?? [];
+$offset = array_key_exists('offset', $filters) ? (int)$filters['offset'] : 0;
 ?>
 
 
@@ -18,7 +20,7 @@ $this->view("layouts/header");
         <table class="table table-striped table-hover table-bordered align-middle">
             <thead class="table-primary">
             <tr>
-                <th>ID</th>
+                <th>#</th>
                 <th>Project</th>
                 <th>Title</th>
                 <th>Assigned To</th>
@@ -29,9 +31,9 @@ $this->view("layouts/header");
             </tr>
             </thead>
             <tbody>
-            <?php foreach ($records as $task): ?>
+            <?php foreach ($records as $key=>$task): ?>
                 <tr>
-                    <td><?= htmlspecialchars($task['id']) ?></td>
+                    <td><?= $offset+$key+1 ?></td>
                     <td><?= htmlspecialchars($task['project_title'] ?? 'Unknown') ?></td>
                     <td><?= htmlspecialchars($task['title']) ?></td>
                     <td><?= htmlspecialchars($task['assigned_username'] ?? 'Unknown') ?></td>

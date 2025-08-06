@@ -29,8 +29,8 @@ class Task extends Model
 
     public function create($data)
     {
-        $sql = "INSERT INTO tasks (project_id, assigned_to, title, description, due_date, priority, status) 
-                VALUES (:project_id, :assigned_to, :title, :description, :due_date, :priority, :status)";
+        $sql = "INSERT INTO tasks (project_id, assigned_to, title, description, due_date, priority, status,created_by) 
+                VALUES (:project_id, :assigned_to, :title, :description, :due_date, :priority, :status,:created_by)";
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([
             ':project_id' => $data['project_id'],
@@ -39,7 +39,8 @@ class Task extends Model
             ':description' => $data['description'],
             ':due_date' => $data['due_date'],
             ':priority' => $data['priority'],
-            ':status' => $data['status']
+            ':status' => $data['status'],
+            ':created_by' => $data['created_by']
         ]);
     }
 
@@ -126,22 +127,69 @@ class Task extends Model
 
     }
 
-    public function getTasksByAssignedUser($userId)
+    public function getTasksByAssignedUser($userId, $filters = []): array
+    {
+        $limit = array_key_exists('limit', $filters) ? (int)$filters['limit'] : 10;
+        $offset = array_key_exists('offset', $filters) ? (int)$filters['offset'] : 0;
+
+        $countSql = "
+        SELECT COUNT(*) 
+        FROM tasks 
+        WHERE assigned_to = :user_id
+    ";
+
+        $countStmt = $this->db->prepare($countSql);
+        $countStmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
+        $countStmt->execute();
+        $count = (int)$countStmt->fetchColumn();
+
+        $sql = "
+        SELECT 
+            t.*, 
+            u_assigned.username AS assigned_username, 
+            u_created.username AS created_by_username,
+            p.title AS project_title
+        FROM tasks t
+        LEFT JOIN projects p ON p.id = t.project_id
+        LEFT JOIN users u_assigned ON t.assigned_to = u_assigned.id
+        LEFT JOIN users u_created ON t.created_by = u_created.id
+        WHERE t.assigned_to = :user_id
+        ORDER BY t.due_date ASC
+        LIMIT :limit OFFSET :offset
+    ";
+
+        $stmt = $this->db->prepare($sql);
+
+        $stmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+
+        $stmt->execute();
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return ['count' => $count, 'records' => $rows];
+    }
+
+
+
+    public function getTasksByID($taskId): array
     {
         $sql = "
-            SELECT t.*, u_assigned.username AS assigned_username, u_created.username AS created_by_username
+            SELECT t.*, u_assigned.username AS assigned_username, u_created.username AS created_by_username,p.title as project_title
             FROM tasks t
+            LEFT JOIN projects p ON p.id = t.project_id
             LEFT JOIN users u_assigned ON t.assigned_to = u_assigned.id
             LEFT JOIN users u_created ON t.created_by = u_created.id
-            WHERE t.assigned_to = :user_id
+            WHERE t.id = :task_id
             ORDER BY t.due_date ASC
         ";
 
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([':user_id' => $userId]);
+        $stmt->execute([':task_id' => $taskId]);
 
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
 
     public function updateTaskByID($id, array $data): bool
     {
