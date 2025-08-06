@@ -46,7 +46,7 @@ class UserController extends Controller
             }
         }
 
-        $this->data['userData'] = $id > 0 ? $this->userModel->findById($id) : [];
+        $this->data['userData'] = $id > 0 ? $this->userModel->findById($id) :null;
         $this->data['error'] = $error;
         $this->view('users/form');
     }

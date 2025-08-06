@@ -13,6 +13,7 @@ INSERT INTO `users` (`id`, `username`, `password`, `role`)
 VALUES (1, 'admin', '$2y$10$sZrf45tlFSjzJyxa39S9e.SJXjYXvoHENZE8mz0FTieHtUz2MdxJa', 'admin'),
        (2, 'member1', '$2y$10$l/XvZ8CPmnC84mNo94pAeuHXWiSgASOQC.P/qm00sjowEVevoxkly', 'member');
 
+
 DROP TABLE IF EXISTS `projects`;
 CREATE TABLE `projects`
 (
@@ -25,6 +26,14 @@ CREATE TABLE `projects`
     KEY           `created_by` (`created_by`),
     CONSTRAINT `projects_ibfk_1` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE project_members (
+                                 project_id INT NOT NULL,
+                                 user_id INT NOT NULL,
+                                 PRIMARY KEY (project_id, user_id),
+                                 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
+                                 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
 
 DROP TABLE IF EXISTS `tasks`;
 CREATE TABLE `tasks`
