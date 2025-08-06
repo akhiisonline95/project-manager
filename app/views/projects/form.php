@@ -15,7 +15,7 @@ $users =$users ??[]
         <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
     <?php endif; ?>
 
-    <form id="projectForm"  method="post" novalidate action="<?= isset($projectData) ? 'index.php?controller=project&action=edit&id=' . $projectData['id'] : 'index.php?controller=project&action=create' ?>">
+    <form id="projectForm"  method="post" novalidate  class="row" action="<?= isset($projectData) ? 'index.php?controller=project&action=edit&id=' . $projectData['id'] : 'index.php?controller=project&action=create' ?>">
         <div class="mb-3 col-md-4 col-12">
             <label for="title" class="form-label">Project Title <span class="text-danger">*</span></label>
             <input type="text" id="title" name="title" class="form-control" required
@@ -44,7 +44,7 @@ $users =$users ??[]
             <small class="form-text text-muted">Hold Ctrl (Windows) or Command (Mac) to select multiple users.</small>
         </div>
 
-        <div>
+        <div class="d-flex gap-2 align-items-center  justify-content-end">
             <button type="submit" class="btn btn-<?= isset($projectData) ? 'primary' : 'success' ?>">
                 <?= isset($projectData) ? 'Update Project' : 'Create Project' ?>
             </button>

@@ -89,4 +89,15 @@ class ProjectController extends Controller
         }
         $this->redirect("project");
     }
+
+    public function members() {
+        $projectId = $_GET['project_id'] ?? null;
+        if (!$projectId) {
+            echo json_encode([]);
+            return;
+        }
+        $members = $this->projectModel->projectMembersById($projectId);
+        header('Content-Type: application/json');
+        echo json_encode($members);
+    }
 }

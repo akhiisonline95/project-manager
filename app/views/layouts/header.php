@@ -24,7 +24,5 @@
         <a href="index.php?controller=project&action=index">Projects</a>
         <a href="index.php?controller=task&action=index">Tasks</a>
         <a href="index.php?controller=user&action=index">Users</a>
-    <?php else: ?>
-        <a href="index.php?controller=task&action=index">My Tasks</a>
     <?php endif; ?>
 </div>

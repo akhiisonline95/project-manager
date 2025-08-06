@@ -86,4 +86,18 @@ class Project extends Model
         $stmt = $this->db->prepare("DELETE FROM projects WHERE id = ?");
         return $stmt->execute([$id]);
     }
+
+
+    //project Members ById
+    public function projectMembersById($projectId)
+    {
+        $stmt = $this->db->prepare(
+            "SELECT u.id, u.username FROM users u
+         INNER JOIN project_members pm ON u.id = pm.user_id
+         WHERE pm.project_id = ?");
+        $stmt->execute([$projectId]);
+        return$stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+
 }
