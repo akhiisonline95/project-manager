@@ -144,7 +144,12 @@ $offset = array_key_exists('offset', $filters) ? (int)$filters['offset'] : 0;
                             <label for="task_created_by" class="form-label">Created By</label>
                             <input type="text" id="task_created_by" class="form-control" disabled/>
                         </div>
+                        <div class="mb-3 col-12">
+                        <div id="task_files_list">
+                        </div>
+                        </div>
                     </div>
+
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-primary">Save Changes</button>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -187,7 +192,25 @@ $offset = array_key_exists('offset', $filters) ? (int)$filters['offset'] : 0;
                         $('#task_assigned_to').html(options);
                         $('#task_assigned_to').val(task.assigned_to);
 
-                        $('#task_created_by').val(task.created_by_username || task.created_by);
+                        $('#task_created_by').val(task.created_by_username );
+
+                        $('#task_files_list').empty();
+
+                        if (task.files && task.files.length > 0) {
+                            let fileListHtml = '<h6>Attached Files:</h6><ul class="list-group">';
+
+                            task.files.forEach(function(file) {
+                                fileListHtml += '<li class="list-group-item d-flex justify-content-between align-items-center">';
+                                fileListHtml += '<a href="../' + file.file_path + '" target="_blank" download="' + file.original_name + '">' + file.original_name + '</a>';
+                                fileListHtml += '<small class="text-muted ms-2">' + file.uploaded_at + '</small>';
+                                fileListHtml += '</li>';
+                            });
+
+                            fileListHtml += '</ul>';
+                            $('#task_files_list').html(fileListHtml);
+                        } else {
+                            $('#task_files_list').html('<p>No files attached to this task.</p>');
+                        }
 
                         taskModal.show();
                     },

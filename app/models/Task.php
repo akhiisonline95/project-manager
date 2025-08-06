@@ -32,7 +32,7 @@ class Task extends Model
         $sql = "INSERT INTO tasks (project_id, assigned_to, title, description, due_date, priority, status,created_by) 
                 VALUES (:project_id, :assigned_to, :title, :description, :due_date, :priority, :status,:created_by)";
         $stmt = $this->db->prepare($sql);
-        return $stmt->execute([
+        $success = $stmt->execute([
             ':project_id' => $data['project_id'],
             ':assigned_to' => $data['assigned_to'],
             ':title' => $data['title'],
@@ -42,6 +42,12 @@ class Task extends Model
             ':status' => $data['status'],
             ':created_by' => $data['created_by']
         ]);
+
+        if ($success) {
+            return $this->db->lastInsertId();
+        } else {
+            return false;
+        }
     }
 
     public function update($id, $data)
@@ -72,7 +78,9 @@ class Task extends Model
     {
         $stmt = $this->db->prepare("SELECT * FROM tasks WHERE id = ?");
         $stmt->execute([$id]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        $task =  $stmt->fetch(PDO::FETCH_ASSOC);
+        $task["files"] = $this->taskFilesByTaskId($id);
+        return $task;
     }
 
     public function getAll($filters = []): array
@@ -107,7 +115,7 @@ class Task extends Model
         $stmtCount->execute($params);
         $count = (int)$stmtCount->fetchColumn();
 
-        $sqlData = "SELECT t.*, p.title AS project_title, u.username AS assigned_username " . $sqlBase . " ORDER BY t.due_date DESC LIMIT :limit OFFSET :offset";
+        $sqlData = "SELECT t.*, p.title AS project_title, u.username AS assigned_username " . $sqlBase . " ORDER BY t.id DESC LIMIT :limit OFFSET :offset";
         $stmtData = $this->db->prepare($sqlData);
 
         foreach ($params as $key => $value) {
@@ -171,7 +179,6 @@ class Task extends Model
     }
 
 
-
     public function getTasksByID($taskId): array
     {
         $sql = "
@@ -219,5 +226,36 @@ class Task extends Model
         $stmt = $this->db->prepare($sql);
         return $stmt->execute($params);
     }
+
+    public function updateTaskFiles($taskId, $safeName, $originalName): bool
+    {
+        $stmt = $this->db->prepare("INSERT INTO task_files (task_id, file_path, original_name) VALUES (:task_id, :file_path, :original_name)");
+        return $stmt->execute([
+            ':task_id' => $taskId,
+            ':file_path' => 'uploads/tasks/' . $safeName,
+            ':original_name' => $originalName,
+        ]);
+    }
+
+    public function taskFilesByTaskId($taskId): array
+    {
+        $stmt = $this->db->prepare("SELECT * FROM  task_files WHERE task_id = :task_id ");
+        $stmt->execute([':task_id' => $taskId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function findFileById(int $id)
+    {
+        $stmt = $this->db->prepare("SELECT * FROM task_files WHERE id = :id LIMIT 1");
+        $stmt->execute([':id' => $id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function deleteFileById(int $id): bool
+    {
+        $stmt = $this->db->prepare("DELETE FROM task_files WHERE id = :id");
+        return $stmt->execute([':id' => $id]);
+    }
+
 
 }

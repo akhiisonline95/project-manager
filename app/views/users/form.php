@@ -13,7 +13,7 @@ $error = $error ?? null;
     <?php endif; ?>
 
     <form id="userForm" method="post" novalidate  class="row"
-          action="<?= isset($projectData) ? 'index.php?controller=user&action=edit&id=' . $projectData['id'] : 'index.php?controller=user&action=create' ?>">
+          action="<?= isset($userData) ? 'index.php?controller=user&action=edit&id=' . $userData['id'] : 'index.php?controller=user&action=create' ?>">
         <?php if ($userData): ?>
             <input type="hidden" name="id" value="<?= htmlspecialchars($userData['id']) ?>"/>
         <?php endif; ?>

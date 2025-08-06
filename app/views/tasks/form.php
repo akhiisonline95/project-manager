@@ -15,8 +15,8 @@ $error = $error ?? null;
         <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
     <?php endif; ?>
 
-    <form id="taskForm" method="post" novalidate class="row"
-          action="<?= isset($projectData) ? 'index.php?controller=task&action=edit&id=' . $projectData['id'] : 'index.php?controller=task&action=create' ?>">
+    <form id="taskForm" method="post" enctype="multipart/form-data" novalidate class="row"
+          action="<?= isset($taskData) ? 'index.php?controller=task&action=edit&id=' . $taskData['id'] : 'index.php?controller=task&action=create' ?>">
         <?php if ($taskData): ?>
             <input type="hidden" name="id" value="<?= $taskData['id'] ?>"/>
         <?php endif; ?>
@@ -53,7 +53,6 @@ $error = $error ?? null;
             </select>
             <div id="assignedError" class="error-msg">Please select a user.</div>
         </div>
-
 
 
         <div class="mb-3 col-md-4 col-12">
@@ -99,12 +98,54 @@ $error = $error ?? null;
             <div id="statusError" class="error-msg">Please select a status.</div>
         </div>
 
+        <div class="mb-3 col-md-8 col-12">
+            <label for="task_files" class="form-label">Upload Files (PDF, DOCX, JPG) *</label>
+            <input type="file" name="task_files[]" id="task_files" class="form-control" multiple
+                   accept=".pdf,.doc,.docx,.jpg,.jpeg"/>
+
+
+        </div>
+
+
         <div class="d-flex gap-2 align-items-center  justify-content-end">
             <button type="submit" class="btn btn-primary"><?= $taskData ? 'Update Task' : 'Add Task' ?></button>
             <a href="index.php?controller=task&action=index" class="btn btn-secondary ms-2">Cancel</a>
         </div>
 
     </form>
+
+    <?php if (!empty($taskData["files"]) && is_array($taskData["files"])): ?>
+        <p class="mt-3">Attached Files:</p>
+        <table class="col-md-auto col-12">
+            <?php foreach ($taskData["files"] as $file): ?>
+                <tr>
+                    <td>
+                        <a href="../<?= htmlspecialchars($file['file_path']) ?>"
+                           target="_blank"
+                           download="<?= htmlspecialchars($file['original_name']) ?>">
+                            <?= htmlspecialchars($file['original_name']) ?>
+                        </a>
+                        <small>(Uploaded on <?= htmlspecialchars($file['uploaded_at']) ?>)</small>
+
+                    </td>
+                    <!-- Delete form -->
+                    <td>
+                        <form method="post" action="index.php?controller=task&action=deleteFile"
+                              style="display:inline-block; margin-left:10px;">
+                            <input type="hidden" name="file_id" value="<?= (int)$file['id'] ?>">
+                            <input type="hidden" name="task_id" value="<?= (int)$file['task_id'] ?>">
+                            <button type="submit" class="btn btn-sm btn-danger"
+                                    onclick="return confirm('Are you sure you want to delete this file?');">
+                                Delete
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        </table>
+    <?php else: ?>
+        <p>No files attached to this task.</p>
+    <?php endif; ?>
 </div>
 
 

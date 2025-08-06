@@ -1,8 +1,8 @@
 <?php
 const DB_HOST = 'localhost';
-const DB_NAME = 'pms';
-const DB_USER = 'wikta';
-const DB_PASS = 'mysqlpass';
+const DB_NAME = 'project_manager';
+const DB_USER = '';
+const DB_PASS = '';
 
 class DB
 {
